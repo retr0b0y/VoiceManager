@@ -6,6 +6,7 @@ load_dotenv()
 
 class MyBot(discord.Bot):
     async def on_ready(self):
+        await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="use /help for info"))
         print(f'Logged in as {self.user.name} (id: {self.user.id})')
 
     def add_commands(self):
@@ -29,7 +30,7 @@ class MyBot(discord.Bot):
  
             logo = discord.File("./static/images/logo.png", filename="logo.png")
             profile = discord.File("./static/images/profile.jpg", filename="profile.jpg")
-            embed.set_author(name="Developer: retr0b0y", icon_url="attachment://profile.jpg")
+            embed.set_author(name="retr0b0y (github)\nretr0b0y73 (discord)", icon_url="attachment://profile.jpg")
             embed.set_thumbnail(url="attachment://logo.png")
  
             await ctx.respond(files=[logo, profile], embed=embed)
