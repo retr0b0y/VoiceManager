@@ -2,7 +2,7 @@ import discord
 import os
 from dotenv import load_dotenv
 
-version = "0.1 (beta)"
+version = "0.1.1 (beta)"
 
 load_dotenv()
 
@@ -41,38 +41,6 @@ class MyBot(discord.Bot):
         self.last_text_channel = channel
 
     def add_commands(self):
-        @self.slash_command(name="help", description="Get information about using the bot")
-        async def help(ctx):
-            embed = discord.Embed(
-                title="VoiceManager Bot Help",
-                description="",
-                color=discord.Colour.blurple(),
-            )
-            embed.add_field(name="➜ What is it?", value="This is a simple Discord bot for voice channel management", inline=False)
-            embed.add_field(name="➜ Commands", value="", inline=False)
-            embed.add_field(name="Command", value="""
-            `/create_lobby_channel`
-            `/delete_lobby_channel`
-            `/ping`
-            `/version`
-            `/help`
-            """, inline=True)
-            embed.add_field(name="Description", value="""
-            Create a lobby channel, joining which will create a temporary channel
-            Delete a lobby channel
-            Check the bot's latency
-            Check the bot's version
-            Get information about using the bot (this message)
-            """, inline=True)
- 
-            logo = discord.File("./static/images/logo.png", filename="logo.png")
-            profile = discord.File("./static/images/profile.jpg", filename="profile.jpg")
-            embed.set_author(name="retr0b0y (github)\nretr0b0y73 (discord)", icon_url="attachment://profile.jpg")
-            embed.set_thumbnail(url="attachment://logo.png")
- 
-            await ctx.respond(files=[logo, profile], embed=embed)
-            self.set_last_text_channel(ctx.channel)
-
         @self.slash_command(name="version", description="Check the bot's version")
         async def ping(ctx):
             await ctx.respond(f"Current bot version is {version}.")
@@ -104,10 +72,31 @@ class MyBot(discord.Bot):
                 self.lobby_channel["category_id"] = None
                 await ctx.respond(f'The lobby channel has been successfully deleted!')
             self.set_last_text_channel(ctx.channel)
+    
+    def generate_help(self):
+        @self.slash_command(name="help", description="Get information about using the bot")
+        async def help(ctx):
+            embed = discord.Embed(
+                title="VoiceManager Bot Help",
+                description="",
+                color=discord.Colour.blurple(),
+            )
+            embed.add_field(name="➜ What is it?", value="This is a simple Discord bot for voice channel management", inline=False)
+            embed.add_field(name="➜ Commands", value="", inline=False)
+            for command in self.commands:
+                embed.add_field(name="", value=f'`/{command.name}`\n{command.description}', inline=False)
+            logo = discord.File("./static/images/logo.png", filename="logo.png")
+            profile = discord.File("./static/images/profile.jpg", filename="profile.jpg")
+            embed.set_author(name="retr0b0y (github)\nretr0b0y73 (discord)", icon_url="attachment://profile.jpg")
+            embed.set_thumbnail(url="attachment://logo.png")
+ 
+            await ctx.respond(files=[logo, profile], embed=embed)
+            self.set_last_text_channel(ctx.channel)
 
 def main():
     bot = MyBot()
     bot.add_commands()
+    bot.generate_help()
     bot.run(os.getenv('DISCORD_TOKEN'))
 
 if __name__ == "__main__":
